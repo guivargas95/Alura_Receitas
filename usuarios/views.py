@@ -19,7 +19,7 @@ def cadastro(request):
             messages.error(request, 'As senhas não são iguais')
             return redirect('cadastro')
         if User.objects.filter(email=email).exists():
-            messages.error(request, 'Usuario já cadastrado')
+            messages.error(request, 'Usuario já foi cadastrado')
             return redirect('cadastro')
         if User.objects.filter(username=nome).exists():
             messages.error(request, 'Usuario já cadastrado')
