@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
-from django.contrib import auth
+from django.contrib import auth, messages
 from recipes.models import Receita
 
 def cadastro(request):
@@ -10,21 +10,24 @@ def cadastro(request):
         senha = request.POST['password']
         senha2 = request.POST['password2']
         if not nome.strip():
-            print('O usuario não pode ficar em branco')
+            messages.error(request, 'O usuario não pode ficar em branco')
             return redirect('cadastro')
         if not email.strip():
-            print('O email não pode ficar em branco')
+            messages.error(request, 'O email não pode ficar em branco')
             return redirect('cadastro')
         if senha != senha2:
-            print('As senhas não coincidem')
+            messages.error(request, 'As senhas não são iguais')
             return redirect('cadastro')
         if User.objects.filter(email=email).exists():
-            print('Usuario já cadastrado')
+            messages.error(request, 'Usuario já cadastrado')
+            return redirect('cadastro')
+        if User.objects.filter(username=nome).exists():
+            messages.error(request, 'Usuario já cadastrado')
             return redirect('cadastro')
         
         user = User.objects.create_user(username=nome, email=email, password=senha)
         user.save()
-        print('Usuário cadastrado com sucesso')
+        messages.success(request, 'Usuário cadastrado com sucesso!')
         return redirect('login')
     else:
         return render(request, 'usuarios\cadastro.html')
@@ -67,6 +70,7 @@ def dashboard(request):
         return redirect('index')
 
 def cria_receita(request):
+
     if request.method == 'POST':
         nome_receita = request.POST['nome_receita']
         ingredientes = request.POST['ingredientes']
@@ -82,3 +86,8 @@ def cria_receita(request):
         return redirect('dashboard')
     else:
         return render(request, 'usuarios/cria_receita.html')
+
+def deleta_receita(request, receita_id):
+    receita = get_object_or_404(Receita, pk=receita_id)
+    receita.delete()
+    return redirect('dashboard')
