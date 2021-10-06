@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import auth, messages
 
 def buscar(request):
+    '''Realiza busca das receitas pelo título''' 
 
     lista_receitas = Receita.objects.filter(publicada=True)
 
